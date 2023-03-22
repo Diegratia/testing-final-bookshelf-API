@@ -1,5 +1,4 @@
 const { nanoid } = require("nanoid");
-// files
 const books = require("./books");
 
 const addBookHandler = (request, h) => {
@@ -26,7 +25,7 @@ const addBookHandler = (request, h) => {
   }
 
   if (readPage > pageCount) {
-    // Client melampirkan nilai properti readPage yang lebih besar dari nilai properti pageCount
+    // readpage lebih besar dari page count
     const response = h
       .response({
         status: "fail",
@@ -38,11 +37,12 @@ const addBookHandler = (request, h) => {
   }
 
   const id = nanoid(16);
-  const finished = pageCount === readPage;
   const insertedAt = new Date().toISOString();
   const updatedAt = insertedAt;
+  const finished = pageCount === readPage;
 
   const newBook = {
+    id,
     name,
     year,
     author,
@@ -51,7 +51,6 @@ const addBookHandler = (request, h) => {
     pageCount,
     readPage,
     reading,
-    id,
     finished,
     insertedAt,
     updatedAt,
