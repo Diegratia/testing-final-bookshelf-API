@@ -1,42 +1,87 @@
 const { nanoid } = require("nanoid");
+// files
 const books = require("./books");
 
 const addBookHandler = (request, h) => {
-  const { title, tags, body } = request.payload;
+  const {
+    name,
+    year,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    reading,
+  } = request.payload;
+
+  if (name == null) {
+    // name bernilai null
+    const response = h
+      .response({
+        status: "fail",
+        message: "Gagal menambahkan buku. Mohon isi nama buku",
+      })
+      .code(400);
+    return response;
+  }
+
+  if (readPage > pageCount) {
+    // Client melampirkan nilai properti readPage yang lebih besar dari nilai properti pageCount
+    const response = h
+      .response({
+        status: "fail",
+        message:
+          "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
+      })
+      .code(400);
+    return response;
+  }
 
   const id = nanoid(16);
-  const createdAt = new Date().toISOString();
-  const updatedAt = createdAt;
+  const finished = pageCount === readPage;
+  const insertedAt = new Date().toISOString();
+  const updatedAt = insertedAt;
 
   const newBook = {
-    title,
-    tags,
-    body,
+    name,
+    year,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    reading,
     id,
-    createdAt,
+    finished,
+    insertedAt,
     updatedAt,
   };
 
-  books.push(newBook);
+  books.push(newBook); // push to books array
 
-  const isSuccess = books.filter((book) => book.id === id).length > 0;
+  const isSuccess = books.filter((note) => note.id === id).length > 0; // cek if newBook pushed
 
   if (isSuccess) {
-    const response = h.response({
-      status: "success",
-      message: "Buku berhasil ditambahkan",
-      data: {
-        bookId: id,
-      },
-    });
-    response.code(201);
+    // Bila buku berhasil dimasukkan
+    const response = h
+      .response({
+        status: "success",
+        message: "Buku berhasil ditambahkan",
+        data: {
+          bookId: id,
+        },
+      })
+      .code(201);
     return response;
   }
-  const response = h.response({
-    status: "fail",
-    message: "Catatan gagal ditambahkan",
-  });
-  response.code(500);
+
+  // Server gagal memasukkan buku karena alasan umum (generic error).
+  const response = h
+    .response({
+      status: "fail",
+      message: "Buku gagal ditambahkan",
+    })
+    .code(500);
   return response;
 };
 
