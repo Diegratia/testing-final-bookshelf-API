@@ -8,7 +8,7 @@ const addBookHandler = (request, h) => {
   const createdAt = new Date().toISOString();
   const updatedAt = createdAt;
 
-  const newNote = {
+  const newBook = {
     title,
     tags,
     body,
@@ -17,16 +17,16 @@ const addBookHandler = (request, h) => {
     updatedAt,
   };
 
-  notes.push(newNote);
+  books.push(newBook);
 
-  const isSuccess = notes.filter((note) => note.id === id).length > 0;
+  const isSuccess = books.filter((book) => book.id === id).length > 0;
 
   if (isSuccess) {
     const response = h.response({
       status: "success",
-      message: "Catatan berhasil ditambahkan",
+      message: "Buku berhasil ditambahkan",
       data: {
-        noteId: id,
+        bookId: id,
       },
     });
     response.code(201);
