@@ -1,8 +1,8 @@
 const { nanoid } = require("nanoid");
 const notes = require("./notes");
 
-const addNoteHandler = (requset, h) => {
-  const { title, tags, body } = requset.payload;
+const addNoteHandler = (request, h) => {
+  const { title, tags, body } = request.payload;
 
   const id = nanoid(16);
   const createdAt = new Date().toISOString();
@@ -75,6 +75,7 @@ const editNoteByIdHandler = (request, h) => {
   const updatedAt = new Date().toISOString();
 
   const index = notes.findIndex((note) => note.id === id);
+
   if (index !== -1) {
     notes[index] = {
       ...notes[index],
