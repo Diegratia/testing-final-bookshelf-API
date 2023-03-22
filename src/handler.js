@@ -91,7 +91,7 @@ const addBookHandler = (request, h) => {
 const getAllBooksHandler = (request, h) => {
   // const { name, reading, finished } = request.query;
 
-  let filterValue = books;
+  var filterValue = books;
 
   // if (name !== undefined) {
   //   filterValue = filterValue.filter((book) =>
@@ -126,27 +126,31 @@ const getAllBooksHandler = (request, h) => {
   return response;
 };
 
-// const getNoteByIdHandler = (request, h) => {
-//   const { id } = request.params;
+const getBookByIdHandler = (request, h) => {
+  const { id } = request.params;
 
-//   const note = notes.filter((n) => n.id === id)[0];
+  const book = books.filter((n) => n.id === id)[0];
 
-//   if (note !== undefined) {
-//     return {
-//       status: "success",
-//       data: {
-//         note,
-//       },
-//     };
-//   }
-//   const response = h.response({
-//     status: "fail",
-//     message: "Catatan tidak ditemukan",
-//   });
-//   response.code(404);
-//   return response;
-// };
+  if (book !== undefined) {
+    const response = h.response({
+      status: "success",
+      data: {
+        book,
+      },
+    });
 
+    response.code(200);
+    return response;
+  }
+
+  const response = h.response({
+    status: "fail",
+    message: "Buku tidak ditemukan",
+  });
+
+  response.code(404);
+  return response;
+};
 // const editNoteByIdHandler = (request, h) => {
 //   const { id } = request.params;
 
@@ -203,7 +207,7 @@ const getAllBooksHandler = (request, h) => {
 module.exports = {
   addBookHandler,
   getAllBooksHandler,
-  // getNoteByIdHandler,
-  // editNoteByIdHandler,
-  // deleteNoteByIdHandler,
+  getBookByIdHandler,
+  // editBookByIdHandler,
+  // deleteBookByIdHandler,
 };
