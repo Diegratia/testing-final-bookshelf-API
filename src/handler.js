@@ -1,6 +1,7 @@
 const { nanoid } = require("nanoid");
 const books = require("./books");
 
+//data disimpan dalam bentuk json melalui request.payload
 const addBookHandler = (request, h) => {
   const {
     name,
@@ -13,33 +14,37 @@ const addBookHandler = (request, h) => {
     reading,
   } = request.payload;
 
-  if (name == null) {
-    // name bernilai null
-    const response = h
-      .response({
-        status: "fail",
-        message: "Gagal menambahkan buku. Mohon isi nama buku",
-      })
-      .code(400);
-    return response;
-  }
-
-  if (readPage > pageCount) {
-    // readpage lebih besar dari page count
-    const response = h
-      .response({
-        status: "fail",
-        message:
-          "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
-      })
-      .code(400);
-    return response;
-  }
-
+  // random generate id sebanyak 16 digit
   const id = nanoid(16);
+  // date to string
   const insertedAt = new Date().toISOString();
+  // waktu melakukan edit
   const updatedAt = insertedAt;
-  const finished = pageCount === readPage;
+  // finished jika readpage identik dengan pagecount
+  const finished = readPage === pageCount;
+
+  // jika name bernilai null
+  if (name == null) {
+    const response = h.response({
+      status: "fail",
+      message: "Gagal menambahkan buku. Mohon isi nama buku",
+    });
+
+    response.code(400);
+    return response;
+  }
+
+  // readpage lebih besar dari page count atau sebaliknya
+  if (readPage > pageCount || pageCount < readPage) {
+    const response = h.response({
+      status: "fail",
+      message:
+        "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
+    });
+
+    response.code(400);
+    return response;
+  }
 
   const newBook = {
     id,
@@ -51,9 +56,9 @@ const addBookHandler = (request, h) => {
     pageCount,
     readPage,
     reading,
-    finished,
     insertedAt,
     updatedAt,
+    finished,
   };
 
   books.push(newBook); // push to books array
@@ -62,34 +67,64 @@ const addBookHandler = (request, h) => {
 
   if (isSuccess) {
     // Bila buku berhasil dimasukkan
-    const response = h
-      .response({
-        status: "success",
-        message: "Buku berhasil ditambahkan",
-        data: {
-          bookId: id,
-        },
-      })
-      .code(201);
+    const response = h.response({
+      status: "success",
+      message: "Buku berhasil ditambahkan",
+      data: {
+        bookId: id,
+      },
+    });
+
+    response.code(201);
     return response;
   }
 
-  // Server gagal memasukkan buku karena alasan umum (generic error).
-  const response = h
-    .response({
-      status: "fail",
-      message: "Buku gagal ditambahkan",
-    })
-    .code(500);
+  const response = h.response({
+    status: "fail",
+    message: "Buku gagal ditambahkan",
+  });
+
+  response.code(500);
   return response;
 };
 
-const getAllBooksHandler = () => ({
-  status: "success",
-  data: {
-    books,
-  },
-});
+const getAllBooksHandler = (request, h) => {
+  // const { name, reading, finished } = request.query;
+
+  let filterValue = books;
+
+  // if (name !== undefined) {
+  //   filterValue = filterValue.filter((book) =>
+  //     book.name.toLowerCase().includes(name.toLowerCase())
+  //   );
+  // }
+
+  // if (reading !== undefined) {
+  //   filterValue = filterValue.filter(
+  //     (book) => book.reading === !!Number(reading)
+  //   );
+  // }
+
+  // if (finished !== undefined) {
+  //   filterValue = filterValue.filter(
+  //     (book) => book.finished === !!Number(finished)
+  //   );
+  // }
+
+  const response = h.response({
+    status: "success",
+    data: {
+      books: filterValue.map((book) => ({
+        id: book.id,
+        name: book.name,
+        publisher: book.publisher,
+      })),
+    },
+  });
+  response.code(200);
+
+  return response;
+};
 
 // const getNoteByIdHandler = (request, h) => {
 //   const { id } = request.params;
