@@ -91,27 +91,23 @@ const addBookHandler = (request, h) => {
 };
 
 const getAllBooksHandler = (request, h) => {
-  // const { name, reading, finished } = request.query;
+  const { name, reading, finished } = request.query;
 
-  var selectedValue = books;
+  let selectedValue = books;
 
-  // if (name !== undefined) {
-  //   filterValue = filterValue.filter((book) =>
-  //     book.name.toLowerCase().includes(name.toLowerCase())
-  //   );
-  // }
+  if (name !== undefined) {
+    selectedValue = selectedValue.filter((b) =>
+      b.name.toUpperCase().includes(name.toUpperCase())
+    );
+  }
 
-  // if (reading !== undefined) {
-  //   filterValue = filterValue.filter(
-  //     (book) => book.reading === !!Number(reading)
-  //   );
-  // }
+  if (reading !== undefined) {
+    selectedValue = selectedValue.filter((b) => b.reading == reading);
+  }
 
-  // if (finished !== undefined) {
-  //   filterValue = filterValue.filter(
-  //     (book) => book.finished === !!Number(finished)
-  //   );
-  // }
+  if (finished !== undefined) {
+    selectedValue = selectedValue.filter((b) => b.finished == finished);
+  }
 
   const response = h.response({
     status: "success",
