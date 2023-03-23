@@ -20,11 +20,13 @@ const addBookHandler = (request, h) => {
   const insertedAt = new Date().toISOString();
   // waktu melakukan edit
   const updatedAt = insertedAt;
+
   // finished jika readpage identik dengan pagecount
   const finished = readPage === pageCount;
+  // outputnya berupa boolean
 
-  // jika name bernilai null
   if (name == null) {
+    // jika name bernilai null
     const response = h.response({
       status: "fail",
       message: "Gagal menambahkan buku. Mohon isi nama buku",
@@ -63,7 +65,7 @@ const addBookHandler = (request, h) => {
 
   books.push(newBook); // push to books array
 
-  const isSuccess = books.filter((note) => note.id === id).length > 0; // cek if newBook pushed
+  const isSuccess = books.filter((b) => b.id === id).length > 0; // cek if newBook pushed
 
   if (isSuccess) {
     // Bila buku berhasil dimasukkan
@@ -91,7 +93,7 @@ const addBookHandler = (request, h) => {
 const getAllBooksHandler = (request, h) => {
   // const { name, reading, finished } = request.query;
 
-  var filterValue = books;
+  var selectedValue = books;
 
   // if (name !== undefined) {
   //   filterValue = filterValue.filter((book) =>
@@ -114,7 +116,7 @@ const getAllBooksHandler = (request, h) => {
   const response = h.response({
     status: "success",
     data: {
-      books: filterValue.map((book) => ({
+      books: selectedValue.map((book) => ({
         id: book.id,
         name: book.name,
         publisher: book.publisher,
@@ -127,9 +129,9 @@ const getAllBooksHandler = (request, h) => {
 };
 
 const getBookByIdHandler = (request, h) => {
-  const { id } = request.params;
+  const { bookId } = request.params;
 
-  const book = books.filter((n) => n.id === id)[0];
+  const book = books.filter((n) => n.id === bookId)[0];
 
   if (book !== undefined) {
     const response = h.response({
@@ -151,36 +153,70 @@ const getBookByIdHandler = (request, h) => {
   response.code(404);
   return response;
 };
-// const editNoteByIdHandler = (request, h) => {
-//   const { id } = request.params;
+const editBookByIdHandler = (request, h) => {
+  // buku diubah sesuai dengan id yang terdapat pada route parameter
+  const { bookId } = request.params;
 
-//   const { title, tags, body } = request.payload;
-//   const updatedAt = new Date().toISOString();
+  const {
+    name,
+    year,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    reading,
+  } = request.payload;
+  const updatedAt = new Date().toISOString();
 
-//   const index = notes.findIndex((note) => note.id === id);
+  if (readPage > pageCount) {
+    const response = h.response({
+      status: "fail",
+      message:
+        "Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount",
+    });
+    response.code(400);
+    return response;
+  }
 
-//   if (index !== -1) {
-//     notes[index] = {
-//       ...notes[index],
-//       title,
-//       tags,
-//       body,
-//       updatedAt,
-//     };
-//     const response = h.response({
-//       status: "success",
-//       message: "Catatan berhasil diperbarui",
-//     });
-//     response.code(200);
-//     return response;
-//   }
-//   const response = h.response({
-//     status: "fail",
-//     message: "Gagal memperbarui catatan. Id tidak ditemukan",
-//   });
-//   response.code(404);
-//   return response;
-// };
+  if (name == null) {
+    const response = h.response({
+      status: "fail",
+      message: "Gagal memperbarui buku. Mohon isi nama buku",
+    });
+    response.code(400);
+    return response;
+  }
+
+  const index = books.findIndex((b) => b.id === bookId);
+
+  if (index !== -1) {
+    books[index] = {
+      ...books[index],
+      name,
+      year,
+      author,
+      summary,
+      publisher,
+      pageCount,
+      readPage,
+      reading,
+      updatedAt,
+    };
+    const response = h.response({
+      status: "success",
+      message: "Buku berhasil diperbarui",
+    });
+    response.code(200);
+    return response;
+  }
+  const response = h.response({
+    status: "fail",
+    message: "Gagal memperbarui buku. Id tidak ditemukan",
+  });
+  response.code(404);
+  return response;
+};
 
 // const deleteNoteByIdHandler = (request, h) => {
 //   const { id } = request.params;
@@ -208,6 +244,6 @@ module.exports = {
   addBookHandler,
   getAllBooksHandler,
   getBookByIdHandler,
-  // editBookByIdHandler,
+  editBookByIdHandler,
   // deleteBookByIdHandler,
 };
