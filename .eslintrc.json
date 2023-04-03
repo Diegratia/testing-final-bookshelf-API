@@ -11,9 +11,19 @@
         "ecmaVersion": "latest"
     },
     "rules": {
-        "no-console": "off"
-    },
-    "editor.codeActionsOnSave": {
-        "source.fixAll": false
+        "no-console": "off",
+        "max-len": ["error", { "code": 120 }],
+
+        "quotes": ["error", "single"],
+        // we want to force semicolons
+        "semi": ["error", "always"],
+        // we use 2 spaces to indent our code
+        "indent": ["error", 2],
+        // we want to avoid extraneous spaces
+        "no-multi-spaces": ["error"]
     }
+    
+    // "editor.codeActionsOnSave": {
+    //     "source.fixAll": true
+    // }
 }
