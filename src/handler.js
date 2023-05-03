@@ -93,7 +93,7 @@ const addBookHandler = (request, h) => {
 const getAllBooksHandler = (request, h) => {
   const { name, reading, finished } = request.query;
 
-  let selectedValue = books;
+  var selectedValue = books;
 
   if (name !== undefined) {
     selectedValue = selectedValue.filter((b) =>
